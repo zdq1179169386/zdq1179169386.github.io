@@ -79,12 +79,14 @@
 
 
 
-<meta name="description" content="iOS 开发">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Cowboy 的博客">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="模式： 代表单个值或复合值的结构swift 的模式分为两种： 一种能匹配任何类型的值，另一种在运行时匹配特定值时可能会失败第一类模式可用于解构简单变量，常量和可选绑定中的值，此类包括通配符模式，标识符模式，以及包含前两种的值绑定模式和元组模式，你可以为这类模式指定一个类型，从而限制它们只能匹配某种特定类型的值。第二类模式用于全模式匹配，这种情况下你试图匹配的值可能在运行时不存在。此类模式包括枚举用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="swift 模式和模式匹配">
+<meta property="og:url" content="http://yoursite.com/2020/06/12/swift%E6%A8%A1%E5%BC%8F/index.html">
 <meta property="og:site_name" content="Cowboy 的博客">
-<meta property="og:description" content="iOS 开发">
+<meta property="og:description" content="模式： 代表单个值或复合值的结构swift 的模式分为两种： 一种能匹配任何类型的值，另一种在运行时匹配特定值时可能会失败第一类模式可用于解构简单变量，常量和可选绑定中的值，此类包括通配符模式，标识符模式，以及包含前两种的值绑定模式和元组模式，你可以为这类模式指定一个类型，从而限制它们只能匹配某种特定类型的值。第二类模式用于全模式匹配，这种情况下你试图匹配的值可能在运行时不存在。此类模式包括枚举用">
+<meta property="article:published_time" content="2020-06-12T08:51:43.937Z">
+<meta property="article:modified_time" content="2020-06-13T05:10:56.421Z">
 <meta property="article:author" content="Cowboy">
 <meta name="twitter:card" content="summary">
 
@@ -116,13 +118,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2020/06/12/swift模式/"/>
 
 
 
 
 
-  <title>Cowboy 的博客</title>
+  <title>swift 模式和模式匹配 | Cowboy 的博客</title>
   
 
 
@@ -141,8 +143,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -215,9 +216,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -247,9 +248,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/12/swift%E6%A8%A1%E5%BC%8F/" itemprop="url">swift 模式和模式匹配</a></h1>
+          <h1 class="post-title" itemprop="name headline">swift 模式和模式匹配</h1>
         
 
         <div class="post-meta">
@@ -299,9 +298,7 @@
       
 
       
-        
-          
-            <p>模式： 代表单个值或复合值的结构<br>swift 的模式分为两种： 一种能匹配任何类型的值，另一种在运行时匹配特定值时可能会失败<br>第一类模式可用于解构简单变量，常量和可选绑定中的值，此类包括通配符模式，标识符模式，以及包含前两种的值绑定模式和元组模式，你可以为这类模式指定一个类型，从而限制它们只能匹配某种特定类型的值。<br>第二类模式用于全模式匹配，这种情况下你试图匹配的值可能在运行时不存在。此类模式包括枚举用例模式，可选模式，表达式模式和类型转换模式。</p>
+        <p>模式： 代表单个值或复合值的结构<br>swift 的模式分为两种： 一种能匹配任何类型的值，另一种在运行时匹配特定值时可能会失败<br>第一类模式可用于解构简单变量，常量和可选绑定中的值，此类包括通配符模式，标识符模式，以及包含前两种的值绑定模式和元组模式，你可以为这类模式指定一个类型，从而限制它们只能匹配某种特定类型的值。<br>第二类模式用于全模式匹配，这种情况下你试图匹配的值可能在运行时不存在。此类模式包括枚举用例模式，可选模式，表达式模式和类型转换模式。</p>
 <h3 id="1-通配符模式"><a href="#1-通配符模式" class="headerlink" title="1, 通配符模式"></a>1, 通配符模式</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> 1..&lt;10 &#123;</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">"-----"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
@@ -312,8 +309,6 @@
 <h3 id="6-可选项模式"><a href="#6-可选项模式" class="headerlink" title="6, 可选项模式"></a>6, 可选项模式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">let someValue : Int? &#x3D; 42</span><br><span class="line">if case let x? &#x3D; someValue &#123;</span><br><span class="line">    print(&quot;\(x)&quot;)</span><br><span class="line">&#125;</span><br><span class="line">let arrOptinals : [Int?] &#x3D; [1,nil,3,4,nil]</span><br><span class="line">for case let x? in arrOptinals &#123;</span><br><span class="line">    print(&quot;\(x)&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="7，类型转换模式"><a href="#7，类型转换模式" class="headerlink" title="7，类型转换模式"></a>7，类型转换模式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">is 模式，不会转换类型, as 模式 会转换类型</span><br><span class="line">protocol Animal&#123;</span><br><span class="line">    var name : String &#123;get&#125;</span><br><span class="line">&#125;</span><br><span class="line">struct Dog : Animal&#123;</span><br><span class="line">    var name: String &#123;</span><br><span class="line">        return &quot;dog&quot;</span><br><span class="line">    &#125;</span><br><span class="line">    var speed : Int</span><br><span class="line">&#125;</span><br><span class="line">struct Bird : Animal&#123;</span><br><span class="line">    var name: String &#123;</span><br><span class="line">        return &quot;bird&quot;</span><br><span class="line">    &#125;</span><br><span class="line">    var height: Int</span><br><span class="line">    </span><br><span class="line">&#125;</span><br><span class="line">struct Fish : Animal&#123;</span><br><span class="line">    var name: String&#123;</span><br><span class="line">        return &quot;fish&quot;</span><br><span class="line">    &#125;</span><br><span class="line">    var depth: Int</span><br><span class="line">&#125;</span><br><span class="line">let animals:[Animal] &#x3D; [Dog(speed: 20),Bird(height: 1000),Fish(depth: 500)]</span><br><span class="line">for animal in animals &#123;</span><br><span class="line">    switch animal &#123;</span><br><span class="line">    case let dog as Dog:</span><br><span class="line">        print(&quot;dog name \(dog.name),can run \(dog.speed)&quot;)</span><br><span class="line">    case let bird as Bird:</span><br><span class="line">        print(&quot;bird name \(bird.name),can fiy \(bird.height)&quot;)</span><br><span class="line">    case is Fish :</span><br><span class="line">        print(&quot;this is fish&quot;)</span><br><span class="line">    default:</span><br><span class="line">        print(&quot;unknown animal&quot;)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="8-表达式模式"><a href="#8-表达式模式" class="headerlink" title="8,表达式模式"></a>8,表达式模式</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">struct Teacher&#123;</span><br><span class="line">    var name: String</span><br><span class="line">    var salary: Int</span><br><span class="line">&#125;</span><br><span class="line">func ~&#x3D; (pattern: Range&lt;Int&gt;,value: Teacher) -&gt; Bool&#123;</span><br><span class="line">    return pattern.contains(value.salary)</span><br><span class="line">&#125;</span><br><span class="line">let teacher &#x3D; Teacher(name: &quot;zdq&quot;, salary: 10000)</span><br><span class="line">switch teacher &#123;</span><br><span class="line">case 0..&lt;2000:</span><br><span class="line">    print(&quot;拮据&quot;)</span><br><span class="line">case 2000..&lt;10000:</span><br><span class="line">    print(&quot;滋润&quot;)</span><br><span class="line">case 10000 ..&lt; 20000:</span><br><span class="line">    print(&quot;土豪&quot;)</span><br><span class="line">default:</span><br><span class="line">    print(&quot;&quot;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          
-        
       
     </div>
     
@@ -330,12 +325,12 @@
       
 
       
+      
+      
 
       
 
       
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -345,10 +340,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -356,6 +352,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -376,8 +376,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -419,6 +428,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-通配符模式"><span class="nav-number">1.</span> <span class="nav-text">1, 通配符模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2，标识符模式"><span class="nav-number">2.</span> <span class="nav-text">2，标识符模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3，值绑定模式"><span class="nav-number">3.</span> <span class="nav-text">3，值绑定模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-元组模式"><span class="nav-number">4.</span> <span class="nav-text">4,元组模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-枚举用例模式"><span class="nav-number">5.</span> <span class="nav-text">5,枚举用例模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-可选项模式"><span class="nav-number">6.</span> <span class="nav-text">6, 可选项模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7，类型转换模式"><span class="nav-number">7.</span> <span class="nav-text">7，类型转换模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-表达式模式"><span class="nav-number">8.</span> <span class="nav-text">8,表达式模式</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -559,6 +584,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
