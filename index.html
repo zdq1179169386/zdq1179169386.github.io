@@ -147,6 +147,84 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/18/rxswift%E7%9A%84%E9%98%B2%E6%8A%96%E5%92%8C%E8%8A%82%E6%B5%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Cowboy">
+      <meta itemprop="description" content="iOS 开发，会点OC，会点swift，会点前端，写过小程序">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cowboy 的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/06/18/rxswift%E7%9A%84%E9%98%B2%E6%8A%96%E5%92%8C%E8%8A%82%E6%B5%81/" class="post-title-link" itemprop="url">Rxswift 的函数防抖和函数节流</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-06-18 18:17:51 / 修改时间：20:48:07" itemprop="dateCreated datePublished" datetime="2020-06-18T18:17:51+08:00">2020-06-18</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>函数防抖和函数节流是前端提出来的概念，具体请看这篇文章<br><a href="https://juejin.im/entry/58c0379e44d9040068dc952f" target="_blank" rel="noopener">函数节流与函数防抖</a></p>
+<p>###函数防抖<br>简单的理解，就是用户手抖了，多点击几下按钮，从而进行了多次网络请求，或者其他的数据操作。如果防止这种情况，就是函数防抖。</p>
+<p>正常情况下多次点击按钮，就会出现下面的情况<br><img src="../images/btnclick.gif" alt=""></p>
+<p>如果按钮里需要进行网络请求，也会进行多次，这显然是不好的，这是我们就可以用<code>RxSwift</code> 的 <code>debounce</code> 操作符来修改</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">button.rx</span><br><span class="line">    .tap</span><br><span class="line">    .asDriver()</span><br><span class="line">    .debounce(1)</span><br><span class="line">    .drive(onNext: &#123; (_) in</span><br><span class="line">        print(&quot;tap&quot;)</span><br><span class="line">    &#125;).disposed(by: disposeBag)</span><br></pre></td></tr></table></figure>
+<p>效果图：</p>
+<p><img src="../images/debounce.gif" alt=""></p>
+<p>###函数节流<br>通常在搜索页面，都出现频繁触发搜索请求的情况下，</p>
+<p><img src="../images/search.gif" alt=""></p>
+<p>上次搜索结果还没回来，又开始下次请求了， 这样很浪费资源，我们可以利用<code>RxSwift</code> 提供的 <code>throttle</code> 操作符，来节省资源</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">searchBar.rx.text</span><br><span class="line">    .orEmpty</span><br><span class="line">    .throttle(RxTimeInterval.seconds(1), scheduler: MainScheduler.instance)</span><br><span class="line">    .distinctUntilChanged()</span><br><span class="line">    .filter&#123; !$0.isEmpty&#125;</span><br><span class="line">    .subscribe(onNext: &#123; (value) in</span><br><span class="line">        print(&quot;request&quot;)</span><br><span class="line">    &#125;).disposed(by: disposeBag)</span><br></pre></td></tr></table></figure>
+<p>效果图: </p>
+<p><img src="../images/throttle.gif" alt=""></p>
+<p>在用户输入的时候，不是一直不停的去请求，而是隔个1秒，再去请求，可以有效的节省资源</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><ul>
+<li><p>函数节流: 指定时间间隔内只会执行一次任务；</p>
+</li>
+<li><p>函数防抖: 任务频繁触发的情况下，只有任务触发的间隔超过指定间隔的时候，任务才会执行。</p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/18/rxswift%E6%93%8D%E4%BD%9C%E7%AC%A6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -416,7 +494,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
