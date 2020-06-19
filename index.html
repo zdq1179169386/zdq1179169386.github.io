@@ -269,7 +269,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-06-19 09:43:45" itemprop="dateModified" datetime="2020-06-19T09:43:45+08:00">2020-06-19</time>
+                <time title="修改时间：2020-06-19 15:20:25" itemprop="dateModified" datetime="2020-06-19T15:20:25+08:00">2020-06-19</time>
               </span>
 
           
@@ -284,6 +284,42 @@
 
       
           <p>操作符可以帮助大家创建新的序列，或者变化组合原有的序列，从而生成一个新的序列。</p>
+<h4 id="map"><a href="#map" class="headerlink" title="map"></a>map</h4><p>map 操作符将源 Observable 的每个元素应用你提供的转换方法，然后返回含有转换结果的 Observable</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Observable.of(1,2,3)</span><br><span class="line">        .map&#123;$0 * 10&#125;</span><br><span class="line">        .subscribe(onNext: &#123; (value) in</span><br><span class="line">            print(value)</span><br><span class="line">        &#125;).disposed(by: disposeBag)</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">10</span><br><span class="line">20</span><br><span class="line">30</span><br></pre></td></tr></table></figure>
+
+<h4 id="flatMap"><a href="#flatMap" class="headerlink" title="flatMap"></a>flatMap</h4><p>flatMap 操作符将源 Observable 的每一个元素应用一个转换方法，将他们转换成 Observables。 然后将这些 Observables 的元素合并之后再发送出来。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;variable 要废弃掉了，要用 BehaviorRelay 替换</span><br><span class="line">let subject1 &#x3D; BehaviorSubject(value: &quot;A&quot;)</span><br><span class="line">let subject2 &#x3D; BehaviorSubject(value: &quot;1&quot;)</span><br><span class="line">let variable &#x3D; BehaviorRelay(value: subject1);</span><br><span class="line">variable.asObservable()</span><br><span class="line">    .flatMap&#123;$0&#125;</span><br><span class="line">    .subscribe(onNext: &#123; (value) in</span><br><span class="line">        print(value)</span><br><span class="line">    &#125;).disposed(by: disposeBag)</span><br><span class="line">    </span><br><span class="line">subject1.onNext(&quot;B&quot;)</span><br><span class="line">variable.accept(subject2)</span><br><span class="line">subject2.onNext(&quot;2&quot;)</span><br><span class="line">subject1.onNext(&quot;C&quot;)</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">A</span><br><span class="line">B</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">C</span><br></pre></td></tr></table></figure>
+
+<h4 id="map-和-flatMap-的区别"><a href="#map-和-flatMap-的区别" class="headerlink" title="map 和 flatMap 的区别"></a>map 和 flatMap 的区别</h4><p>先看下swift 中的 map 和 flatMap 的区别</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">let array &#x3D; [[1,2,3],[4,5]]</span><br><span class="line">let array2 &#x3D; array.map&#123;$0&#125;</span><br><span class="line">print(array2)</span><br><span class="line">    </span><br><span class="line">let array3 &#x3D; array.flatMap&#123;$0&#125;</span><br><span class="line">print(array3)</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[[1, 2, 3], [4, 5]]</span><br><span class="line">[1, 2, 3, 4, 5]</span><br></pre></td></tr></table></figure>
+<p>明显就能看出<br>flatMap 把大数组拉平了，而 map 只会操作大数组中的小数组上，不会对小数组中元素有任何操作</p>
+<p>RxSwift 中的 map 和 flatMap </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">let array &#x3D; [[1,2,3],[4,5]]</span><br><span class="line"></span><br><span class="line">Observable.from(array)</span><br><span class="line">.map&#123;$0&#125;</span><br><span class="line">.subscribe(onNext: &#123; (value) in</span><br><span class="line">    print(value)</span><br><span class="line">&#125;).disposed(by: disposeBag)</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;flatMap ： 不仅可以将大数组拉平，而且能将小数组中的每个元素，转换为字符    </span><br><span class="line">Observable.from(array)</span><br><span class="line">        .flatMap &#123; (numbers) -&gt; Observable&lt;String&gt; in</span><br><span class="line">            return Observable.from(numbers).map&#123;&quot;:&quot;+String($0)&#125;</span><br><span class="line">    &#125;.subscribe(onNext: &#123; (value) in</span><br><span class="line">        print(value)</span><br><span class="line">        &#125;).disposed(by: disposeBag)</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[1, 2, 3]</span><br><span class="line">[4, 5]</span><br><span class="line"></span><br><span class="line">:1</span><br><span class="line">:2</span><br><span class="line">:4</span><br><span class="line">:3</span><br><span class="line">:5</span><br></pre></td></tr></table></figure>
+<p>区别: </p>
+<ul>
+<li><p>map 变换后返回任意类型，flatMap : 返回 Observable<T> 类型</p>
+</li>
+<li><p>map只能进行一对一的变换，而flatMap则可以进行一对多，多对多的变换</p>
+</li>
+</ul>
+<h4 id="flatMapLatest"><a href="#flatMapLatest" class="headerlink" title="flatMapLatest"></a>flatMapLatest</h4><p> flatMapLatest与flatMap 的唯一区别是：flatMapLatest只会接收最新的value 事件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">let subject1 &#x3D; BehaviorSubject(value: &quot;A&quot;)</span><br><span class="line">  let subject2 &#x3D; BehaviorSubject(value: &quot;1&quot;)</span><br><span class="line">  </span><br><span class="line">  let relay &#x3D; BehaviorRelay(value: subject1)</span><br><span class="line">  relay.asObservable().flatMapLatest&#123; $0 &#125;</span><br><span class="line">      .subscribe(onNext: &#123; (value) in</span><br><span class="line">          print(value)</span><br><span class="line">      &#125;).disposed(by: disposeBag)</span><br><span class="line">  subject1.onNext(&quot;B&quot;)</span><br><span class="line">  relay.accept(subject2)</span><br><span class="line">  subject2.onNext(&quot;2&quot;)</span><br><span class="line">  subject1.onNext(&quot;C&quot;)</span><br></pre></td></tr></table></figure>
+
+<h4 id="concatMap"><a href="#concatMap" class="headerlink" title="concatMap"></a>concatMap</h4><p>concatMap 与 flatMap 的唯一区别是：当前一个 Observable 元素发送完毕后，后一个Observable 才可以开始发出元素。或者说等待前一个 Observable 产生完成事件后，才对后一个 Observable 进行订阅。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">let subject1 &#x3D; BehaviorSubject(value: &quot;A&quot;)</span><br><span class="line">let subject2 &#x3D; BehaviorSubject(value: &quot;1&quot;)</span><br><span class="line">    </span><br><span class="line">let relay &#x3D; BehaviorRelay(value: subject1)</span><br><span class="line">    </span><br><span class="line">relay.asObservable()</span><br><span class="line">    .concatMap&#123;$0&#125;</span><br><span class="line">    .subscribe(onNext: &#123; (value) in</span><br><span class="line">        print(value)</span><br><span class="line">    &#125;).disposed(by: disposeBag)</span><br><span class="line">    </span><br><span class="line">subject1.onNext(&quot;B&quot;)</span><br><span class="line">relay.accept(subject2)</span><br><span class="line">subject2.onNext(&quot;2&quot;)</span><br><span class="line">subject1.onNext(&quot;C&quot;)</span><br><span class="line">subject1.onCompleted()</span><br></pre></td></tr></table></figure>
+<p>输出:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">A</span><br><span class="line">B</span><br><span class="line">C</span><br><span class="line">2</span><br></pre></td></tr></table></figure>
+
+
 <h4 id="filter"><a href="#filter" class="headerlink" title="filter"></a>filter</h4><p>filter: 会过滤掉小于满足条件的元素</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Observable.of(2,30,40,22,6,9).filter &#123;</span><br><span class="line">	$0 &gt; 10</span><br><span class="line">&#125;.subscribe(onNext: &#123; (value) in**</span><br><span class="line">	print(value)</span><br><span class="line">&#125;).disposed(by: disposeBag)</span><br></pre></td></tr></table></figure>
 <p>输出:</p>
@@ -303,6 +339,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Observable.of(1, 2, 3, 4)</span><br><span class="line">    .elementAt(2)</span><br><span class="line">    .subscribe(onNext: &#123; print($0) &#125;)</span><br><span class="line">    .disposed(by: disposeBag)</span><br></pre></td></tr></table></figure>
 <p>输出:</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">3</span><br></pre></td></tr></table></figure>
+
 <h4 id="ignoreElements"><a href="#ignoreElements" class="headerlink" title="ignoreElements"></a>ignoreElements</h4><p>ignoreElements 操作符将阻止 Observable 发出 next 事件，但是允许他发出 error 或 completed 事件。<br>如果你并不关心 Observable 的任何元素，你只想知道 Observable 在什么时候终止，那就可以使用 ignoreElements 操作符。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Observable.of(1,2,3)</span><br><span class="line">    .ignoreElements()</span><br><span class="line">    .subscribe(onCompleted: &#123;</span><br><span class="line">        print(&quot;onCompleted&quot;)</span><br><span class="line">    &#125;).disposed(by: disposeBag)</span><br></pre></td></tr></table></figure>
 <p>输出：</p>
@@ -328,7 +365,28 @@
 </blockquote>
 <p>输出：</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td></tr></table></figure>
+<h4 id="buffer"><a href="#buffer" class="headerlink" title="buffer"></a>buffer</h4><p>缓存元素，然后将缓存的元素集合，周期性的发出来</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">let subject &#x3D; PublishSubject&lt;String&gt;()</span><br><span class="line">subject.buffer(timeSpan: RxTimeInterval.seconds(1), count: 3, scheduler: MainScheduler.init())</span><br><span class="line">    .subscribe(onNext: &#123;</span><br><span class="line">        print($0)</span><br><span class="line">    &#125;).disposed(by: disposeBag)</span><br><span class="line">    </span><br><span class="line">subject.onNext(&quot;1&quot;)</span><br><span class="line">subject.onNext(&quot;2&quot;)</span><br><span class="line">subject.onNext(&quot;3&quot;)</span><br><span class="line">    </span><br><span class="line">subject.onNext(&quot;A&quot;)</span><br><span class="line">subject.onNext(&quot;B&quot;)</span><br><span class="line">subject.onNext(&quot;C&quot;)</span><br><span class="line">    </span><br><span class="line">subject.onCompleted()</span><br></pre></td></tr></table></figure>
+<p>输出： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[&quot;1&quot;, &quot;2&quot;, &quot;3&quot;]</span><br><span class="line">[&quot;A&quot;, &quot;B&quot;, &quot;C&quot;]</span><br></pre></td></tr></table></figure>
 
+<h4 id="window"><a href="#window" class="headerlink" title="window"></a>window</h4><p>window 操作符和 buffer 十分相似，buffer 周期性的将缓存的元素集合发送出来，而 window 周期性的将元素集合以 Observable 的形态发送出来。</p>
+<p>buffer 要等到元素搜集完毕后，才会发出元素序列。而 window 可以实时发出元素序列。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">let subject &#x3D; PublishSubject&lt;String&gt;()</span><br><span class="line">subject.window(timeSpan: RxTimeInterval.seconds(1), count: 3, scheduler: MainScheduler.instance)</span><br><span class="line">    .subscribe(onNext: &#123; [weak self] in</span><br><span class="line">        print(&quot;:&quot;,$0)</span><br><span class="line">        $0.asObservable().subscribe(onNext: &#123;</span><br><span class="line">            print($0)</span><br><span class="line">        &#125;).disposed(by: self!.disposeBag)</span><br><span class="line">    &#125;).disposed(by: disposeBag)</span><br><span class="line">    </span><br><span class="line">subject.onNext(&quot;A&quot;)</span><br><span class="line">subject.onNext(&quot;B&quot;)</span><br><span class="line">subject.onNext(&quot;C&quot;)</span><br><span class="line">    </span><br><span class="line">subject.onNext(&quot;1&quot;)</span><br><span class="line">subject.onNext(&quot;2&quot;)</span><br><span class="line">subject.onNext(&quot;3&quot;)</span><br><span class="line">subject.onCompleted()</span><br></pre></td></tr></table></figure>
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">: RxSwift.AddRef&lt;Swift.String&gt;</span><br><span class="line">A</span><br><span class="line">B</span><br><span class="line">C</span><br><span class="line">: RxSwift.AddRef&lt;Swift.String&gt;</span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">: RxSwift.AddRef&lt;Swift.String&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="scan"><a href="#scan" class="headerlink" title="scan"></a>scan</h4><p>scan 就是先给一个初始化的数，然后不断的拿前一个结果和最新的值进行处理操作</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Observable.of(1,2,3,4)</span><br><span class="line">        .scan(1) &#123; (ack, sum) in</span><br><span class="line">            print(ack,sum)</span><br><span class="line">            return  ack + sum</span><br><span class="line">    &#125;.subscribe(onNext: &#123; (value) in</span><br><span class="line">        print(value)</span><br><span class="line">    &#125;).disposed(by: disposeBag)</span><br></pre></td></tr></table></figure>
+
+<p>输出:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">2</span><br><span class="line">4</span><br><span class="line">7</span><br><span class="line">11</span><br></pre></td></tr></table></figure>
+
+<h4 id="groupBy"><a href="#groupBy" class="headerlink" title="groupBy"></a>groupBy</h4><p>groupBy 操作符将源 Observable 分解为多个子 Observable，然后将这些子 Observable 发送出来。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Observable&lt;Int&gt;.of(1,2,3,4,5,6,7,8,9)</span><br><span class="line">        .groupBy &#123; (value) -&gt; String in</span><br><span class="line">            return value % 2 &#x3D;&#x3D; 0 ? &quot;偶数&quot; : &quot;奇数&quot;</span><br><span class="line">    &#125;.subscribe &#123; (event) in</span><br><span class="line">        switch event&#123;</span><br><span class="line">        case .next(let group):</span><br><span class="line">            group.asObservable().subscribe &#123; (event) in</span><br><span class="line">                print(group.key,event)</span><br><span class="line">            &#125;.disposed(by: self.disposeBag)</span><br><span class="line">        default :</span><br><span class="line">            print(&quot;&quot;)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;.disposed(by: disposeBag)</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">奇数 1</span><br><span class="line">偶数 2</span><br><span class="line">奇数 3</span><br><span class="line">偶数 4</span><br><span class="line">奇数 5</span><br><span class="line">偶数 6</span><br><span class="line">奇数 7</span><br><span class="line">偶数 8</span><br><span class="line">奇数 9</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -447,6 +505,71 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/19/sdwebimage%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Cowboy">
+      <meta itemprop="description" content="iOS 开发，会点OC，会点swift，会点前端，写过小程序">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cowboy 的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/12/19/sdwebimage%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/" class="post-title-link" itemprop="url">SDWebimage 源码解析</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-19 09:55:19" itemprop="dateCreated datePublished" datetime="2018-12-19T09:55:19+08:00">2018-12-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-06-19 10:34:58" itemprop="dateModified" datetime="2020-06-19T10:34:58+08:00">2020-06-19</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>SDWebimage </p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
 
@@ -513,14 +636,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-count">4</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
