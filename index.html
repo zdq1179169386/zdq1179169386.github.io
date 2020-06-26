@@ -152,6 +152,72 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/26/%E9%93%BE%E8%A1%A8%E6%9C%89%E7%8E%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Cowboy">
+      <meta itemprop="description" content="iOS 开发，会点OC，会点swift，会点前端，写过小程序">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cowboy 的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/06/26/%E9%93%BE%E8%A1%A8%E6%9C%89%E7%8E%AF/" class="post-title-link" itemprop="url">如何判断链表是否有环?</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-06-26 20:00:44 / 修改时间：20:58:49" itemprop="dateCreated datePublished" datetime="2020-06-26T20:00:44+08:00">2020-06-26</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h4 id="1，如何判断链表是否有环"><a href="#1，如何判断链表是否有环" class="headerlink" title="1，如何判断链表是否有环?"></a>1，如何判断链表是否有环?</h4><p>解题思路：</p>
+<blockquote>
+<p>快慢指针<br>如何链表有环，快指针和慢指针必定会相遇，反之，快节点迭代到尾结点时，它的next 或者 fast 必定为空。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public boolean listHasCycle(ListNode head) &#123;</span><br><span class="line">        if (head &#x3D;&#x3D; null || head.next &#x3D;&#x3D; null) return false;</span><br><span class="line">        ListNode slow &#x3D; head;</span><br><span class="line">        ListNode fast &#x3D; head.next;</span><br><span class="line">        while (fast !&#x3D; null &amp;&amp; fast.next !&#x3D; null) &#123;</span><br><span class="line">            if (fast &#x3D;&#x3D; slow) return  true;</span><br><span class="line">            slow &#x3D; slow.next;</span><br><span class="line">            fast &#x3D; fast.next.next;</span><br><span class="line">        &#125;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>题目升级</p>
+<h4 id="2，给定一个链表，如果有环-返回链表开始入环的第一个节点。-如果链表无环，则返回-null。"><a href="#2，给定一个链表，如果有环-返回链表开始入环的第一个节点。-如果链表无环，则返回-null。" class="headerlink" title="2，给定一个链表，如果有环,返回链表开始入环的第一个节点。 如果链表无环，则返回 null。"></a>2，给定一个链表，如果有环,返回链表开始入环的第一个节点。 如果链表无环，则返回 null。</h4><p>解题思路：<br>如果有环，那么快慢节点就会相遇，相遇的地方我们称为相遇点，这时候如果，让一个节点从头节点开始出发，每次走一步，然后让另一个节点，从相遇点出发，也每次走一步，那么这两个节点相遇的位置，就是环的入口节点。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;获取相遇节点</span><br><span class="line">public ListNode getIntersect(ListNode head) &#123;</span><br><span class="line">    ListNode slow &#x3D; head;</span><br><span class="line">    ListNode fast &#x3D; head.next;</span><br><span class="line">    while (fast !&#x3D; null &amp;&amp; fast.next !&#x3D; null) &#123;</span><br><span class="line">        if (fast &#x3D;&#x3D; slow) return slow;</span><br><span class="line">        slow &#x3D; slow.next;</span><br><span class="line">        fast &#x3D; fast.next.next;</span><br><span class="line">    &#125;</span><br><span class="line">    return  null;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">&#x2F;&#x2F;获取环的入口节点</span><br><span class="line">public ListNode getEntrance(ListNode head) &#123;</span><br><span class="line">    if (head &#x3D;&#x3D; null) return null;</span><br><span class="line">    ListNode node &#x3D; getIntersect(head);&#x2F;&#x2F;相遇点</span><br><span class="line">    if (node &#x3D;&#x3D; null) return null;</span><br><span class="line">    ListNode left &#x3D; head;</span><br><span class="line">    ListNode right &#x3D; node;</span><br><span class="line">    while (left !&#x3D; right) &#123;</span><br><span class="line">        left &#x3D; left.next;</span><br><span class="line">        right &#x3D; right.next;</span><br><span class="line">    &#125;</span><br><span class="line">    执行到这说明两个节点相遇了</span><br><span class="line">    return left;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/06/26/%E9%93%BE%E8%A1%A8%E5%8F%8D%E8%BD%AC/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -177,7 +243,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-06-26 15:36:00 / 修改时间：19:57:23" itemprop="dateCreated datePublished" datetime="2020-06-26T15:36:00+08:00">2020-06-26</time>
+              <time title="创建时间：2020-06-26 15:36:00 / 修改时间：20:02:07" itemprop="dateCreated datePublished" datetime="2020-06-26T15:36:00+08:00">2020-06-26</time>
             </span>
 
           
@@ -959,14 +1025,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">7</span>
+          <span class="site-state-item-count">8</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
