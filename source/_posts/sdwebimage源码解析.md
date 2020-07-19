@@ -81,6 +81,12 @@ self.weakCache = [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrong
 
 另外，它还自己监听了 `UIApplicationDidReceiveMemoryWarningNotification` 通知，收到内存警告的时候，会释放内存。(不太清楚这里为啥还要监听内存警告通知，不是说nscache 会自动移除对象来释放内存吗)
 
+疑问？
+> SDMemoryCache 本身是继承 NSCache 的，为啥还要用 weakCache 来存储数据呢？况且之前的版本，SDImageCache 就有一个 NSCache 类型的属性 memoryCache，后续版本为啥要这么修改呢？
+
+原因：
+> NSCache 本身是会在收到内存警告的时候，会自动释放一部分内存的，假如 imageview 需要一张图，这时候会先去内存找这张图，没有再去磁盘中读取，加载一份到内存中，同时设置到 imageView 上，如果这时，收到内存警告了，memoryCache 会自动释放掉一部分内存，刚好就是刚刚读取到内存中的这张图片，如果是列表反复滑动的时候，就会出现频繁去磁盘中读取图片的情况，我们都知道去磁盘中读取数据是非常耗时的，所以 Sd 使用了  NSMapTable类型的 weakCache 。自己实现了收到内存警告的方法，修改删除逻辑，优先删除老的数据，而不是最近使用的数据。
+
 ### SDDiskCache
 
 它拥有一个 `fileManager` 对象，负责图片存储和删除。
