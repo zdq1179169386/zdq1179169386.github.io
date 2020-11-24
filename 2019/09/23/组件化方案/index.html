@@ -20,18 +20,18 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="参考:  https:&#x2F;&#x2F;juejin.im&#x2F;post&#x2F;6844903829075574792 Pod 预编译的傻瓜式解决方案 基于 CocoaPods 的组件二进制化实践 知乎 iOS 基于 CocoaPods 实现的二进制化方案 https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;101333967 美团 iOS 工程 zsource 命令背后的那些事儿 一. 组件划分 目前项目中组件划">
+  <meta name="description" content="一. 组件划分 目前项目中组件划分，基本上以下3类  基础组件：网络组件( AFNetworking 的封装 )，数据库组件 ( FMDB 封装 )，图片缓存 (SDWebImage)，json解析( YYModel) ，缓存组件。 功能组件：视频播放组件，音频录制和播放组件, 相册组件, 路由组件，Debug 组件，图片预览组件，定位组件，富文本组件( YYText )，扫描组件。 UI组件：">
 <meta property="og:type" content="article">
 <meta property="og:title" content="组件化方案">
 <meta property="og:url" content="http://yoursite.com/2019/09/23/%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88/index.html">
 <meta property="og:site_name" content="Cowboy 的博客">
-<meta property="og:description" content="参考:  https:&#x2F;&#x2F;juejin.im&#x2F;post&#x2F;6844903829075574792 Pod 预编译的傻瓜式解决方案 基于 CocoaPods 的组件二进制化实践 知乎 iOS 基于 CocoaPods 实现的二进制化方案 https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;101333967 美团 iOS 工程 zsource 命令背后的那些事儿 一. 组件划分 目前项目中组件划">
+<meta property="og:description" content="一. 组件划分 目前项目中组件划分，基本上以下3类  基础组件：网络组件( AFNetworking 的封装 )，数据库组件 ( FMDB 封装 )，图片缓存 (SDWebImage)，json解析( YYModel) ，缓存组件。 功能组件：视频播放组件，音频录制和播放组件, 相册组件, 路由组件，Debug 组件，图片预览组件，定位组件，富文本组件( YYText )，扫描组件。 UI组件：">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://yoursite.com/2019/09/23/%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88/images/zhihanyun_zujian.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/09/23/%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88/images/bcuikit.jpg">
 <meta property="og:image" content="http://yoursite.com/2019/09/23/%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88/images/abcommon.jpg">
 <meta property="article:published_time" content="2019-09-23T15:01:41.000Z">
-<meta property="article:modified_time" content="2020-11-24T09:15:02.654Z">
+<meta property="article:modified_time" content="2020-11-24T09:16:17.060Z">
 <meta property="article:author" content="Cowboy">
 <meta property="article:tag" content="组件化">
 <meta name="twitter:card" content="summary">
@@ -190,7 +190,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-24 17:15:02" itemprop="dateModified" datetime="2020-11-24T17:15:02+08:00">2020-11-24</time>
+                <time title="修改时间：2020-11-24 17:16:17" itemprop="dateModified" datetime="2020-11-24T17:16:17+08:00">2020-11-24</time>
               </span>
 
           
@@ -204,14 +204,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>参考: </p>
-<p><a href="">https://juejin.im/post/6844903829075574792</a></p>
-<p><a href="https://leavez.xyz/2018/05/04/intruduce_binary/" target="_blank" rel="noopener">Pod 预编译的傻瓜式解决方案</a></p>
-<p><a href="https://dmanager.github.io/ios/2019/01/21/%E5%9F%BA%E4%BA%8ECocoaPods%E7%9A%84%E7%BB%84%E4%BB%B6%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%8C%96%E5%AE%9E%E8%B7%B5/" target="_blank" rel="noopener">基于 CocoaPods 的组件二进制化实践</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/44280283" target="_blank" rel="noopener">知乎 iOS 基于 CocoaPods 实现的二进制化方案</a></p>
-<p><a href="">https://zhuanlan.zhihu.com/p/101333967</a></p>
-<p><a href="">美团 iOS 工程 zsource 命令背后的那些事儿</a></p>
-<h3 id="一-组件划分"><a href="#一-组件划分" class="headerlink" title="一. 组件划分"></a>一. 组件划分</h3><p><img src="images/zhihanyun_zujian.jpg" alt=""></p>
+        <h3 id="一-组件划分"><a href="#一-组件划分" class="headerlink" title="一. 组件划分"></a>一. 组件划分</h3><p><img src="images/zhihanyun_zujian.jpg" alt=""></p>
 <p>目前项目中组件划分，基本上以下3类</p>
 <ol>
 <li>基础组件：网络组件( AFNetworking 的封装 )，数据库组件 ( FMDB 封装 )，图片缓存 (SDWebImage)，json解析( YYModel) ，缓存组件。</li>
@@ -243,11 +236,17 @@
 <blockquote>
 <p>bc_useLib：如果组件比较稳定了，而且代码比较私密，可以打包成 framework ,然后导入，必须创建对应的 podSpec 文件。</p>
 </blockquote>
-<p>像 cocoapods 的二进制化，可以参考下最上面的一些文章。 </p>
+<p>像 cocoapods 的二进制化，可以参考下最下面的一些文章。 </p>
 <h3 id="四-组件通信方式"><a href="#四-组件通信方式" class="headerlink" title="四. 组件通信方式"></a>四. 组件通信方式</h3><ol>
 <li>路由</li>
-<li></li>
 </ol>
+<p>参考: </p>
+<p><a href="">https://juejin.im/post/6844903829075574792</a></p>
+<p><a href="https://leavez.xyz/2018/05/04/intruduce_binary/" target="_blank" rel="noopener">Pod 预编译的傻瓜式解决方案</a></p>
+<p><a href="https://dmanager.github.io/ios/2019/01/21/%E5%9F%BA%E4%BA%8ECocoaPods%E7%9A%84%E7%BB%84%E4%BB%B6%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%8C%96%E5%AE%9E%E8%B7%B5/" target="_blank" rel="noopener">基于 CocoaPods 的组件二进制化实践</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/44280283" target="_blank" rel="noopener">知乎 iOS 基于 CocoaPods 实现的二进制化方案</a></p>
+<p><a href="">https://zhuanlan.zhihu.com/p/101333967</a></p>
+<p><a href="">美团 iOS 工程 zsource 命令背后的那些事儿</a></p>
 
     </div>
 
