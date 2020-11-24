@@ -152,101 +152,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/09/23/%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Cowboy">
-      <meta itemprop="description" content="iOS 开发，会点OC，会点swift，会点前端，写过小程序">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Cowboy 的博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2020/09/23/%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88/" class="post-title-link" itemprop="url">组件化方案</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-09-23 23:01:41" itemprop="dateCreated datePublished" datetime="2020-09-23T23:01:41+08:00">2020-09-23</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-24 15:17:52" itemprop="dateModified" datetime="2020-11-24T15:17:52+08:00">2020-11-24</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>参考: </p>
-<p><a href="">https://juejin.im/post/6844903829075574792</a></p>
-<p><a href="https://leavez.xyz/2018/05/04/intruduce_binary/" target="_blank" rel="noopener">Pod 预编译的傻瓜式解决方案</a></p>
-<p><a href="https://dmanager.github.io/ios/2019/01/21/%E5%9F%BA%E4%BA%8ECocoaPods%E7%9A%84%E7%BB%84%E4%BB%B6%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%8C%96%E5%AE%9E%E8%B7%B5/" target="_blank" rel="noopener">基于 CocoaPods 的组件二进制化实践</a></p>
-<p><a href="https://zhuanlan.zhihu.com/p/44280283" target="_blank" rel="noopener">知乎 iOS 基于 CocoaPods 实现的二进制化方案</a></p>
-<p><a href="">https://zhuanlan.zhihu.com/p/101333967</a></p>
-<p><a href="">美团 iOS 工程 zsource 命令背后的那些事儿</a></p>
-<h3 id="一-组件划分"><a href="#一-组件划分" class="headerlink" title="一. 组件划分"></a>一. 组件划分</h3><p><img src="images/zhihanyun_zujian.jpg" alt=""></p>
-<p>目前项目中组件划分，基本上以下3类</p>
-<ol>
-<li>基础组件：网络组件( AFNetworking 的封装 )，数据库组件 ( FMDB 封装 )，图片缓存 (SDWebImage)，json解析( YYModel) ，缓存组件。</li>
-<li>功能组件：视频播放组件，音频录制和播放组件, 相册组件, 路由组件，Debug 组件，图片预览组件，定位组件，富文本组件( YYText )，扫描组件。</li>
-<li>UI组件： 空视图集组件，弹框组件，多页面嵌套滚动组件。</li>
-</ol>
-<p>两个比较重要的基础组件像 BCFoundation 组件和 BCUIKit 组件，需要特别说下。因为这两个组件的定位，就相当于系统的 UIKit 和 Foundtion 库。</p>
-<ol>
-<li><p>BCFoundation 是常用的 NS 开头的系统类的分类</p>
-</li>
-<li><p>BCUIKit 是常用的 UI 开头的系统类的分类</p>
-</li>
-</ol>
-<p><img src="images/bcuikit.jpg" alt=""></p>
-<h3 id="二-业务模块"><a href="#二-业务模块" class="headerlink" title="二. 业务模块"></a>二. 业务模块</h3><p>业务模块的划分其实都比较简单，主要按照单个业务来划分，首页模块单独划分成 HomeModule 或者 HomeKit，个人中心单独划分成 MeModule 或者 MeKit ,这些都不是太复杂的，复杂的是模块之间有耦合怎么办。例如 A 模块和 B 模块都要用到, AViewController.h, AViewController.m , Amodel.h ， Amodel.m 。 我们的做法是将  AViewController 和 Amodel 单独提出来做成一个公共组件 MediatorKit，然后让 A 模块和 B 模块都依赖这个  MediatorKit。这样代码的复用率就高了，不用在 A 模块和 B 模块都写一遍相同的代码。</p>
-<h3 id="三-集成方式"><a href="#三-集成方式" class="headerlink" title="三. 集成方式"></a>三. 集成方式</h3><p>组件化通用的集成方式，都是将组件做成 cocoapods 的私有组件，然后维护一个私有 podspec 源。这种方式保证了组件不像公开库那样，不被外界访问，也能用 cocoapods 导入。但是在实际开发的过程中，将每个组件做成私有组件，然后迭代升级，发布，过程太繁琐和复杂了。我们就没有采用私有库的方式，而是采用的是本地库 + tag 的方式。</p>
-<p><img src="images/pod_yytext.jpg" alt=""></p>
-<p>上图，首先 cocoapods 本质也是拉取 github 上的公开库的tag，稳定的组件就通过tag 方式导入，正在开发的业务组件，就用本地库的方式，但是本地组件，没法和其他人同步代码。我们采用脚本来解决这个问题。</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bc_pod &quot;BCFoundation&quot;, :tag &#x3D;&gt; &quot;v1.3.6.3&quot;, :bc_subSpecs &#x3D;&gt; [&quot;Core&quot;], :git &#x3D;&gt; &quot;git@git.xxx.com:ios-component&#x2F;BCFoundation.git&quot;, :inhibit_warnings &#x3D;&gt; false , :bc_useBranch &#x3D;&gt; 0, :bc_branch &#x3D;&gt; &quot;develop&quot;, :bc_useRemote &#x3D;&gt; 1,  :bc_useLib &#x3D;&gt; 0</span><br></pre></td></tr></table></figure>
-<p>上面就是我们导入组件的方式，</p>
-<p>bc_useRemote ：1 表示是否使用 git 上的库，0 表示使用本地代码。选择的是 1 的话，我们会去 git 上拉取相应tag 的源码。<br>选择 0 的话，我们先去本地判断有没有有没有 BCFoundation 这个库，有的话，直接用git pull 拉取最新代码，没有的话，利用 git  去 git 地址去 git clone ，</p>
-<p>bc_branch： git clone 是可以clone 不同 分支的，如果本地有这个库，那就先删掉本地的，然后再 clone 相应分支的代码。</p>
-<p>bc_useLib：如果组件比较稳定了，而且代码比较私密，可以打包成 framework ,然后导入。必须创建对应的 podSpec 文件。</p>
-<h3 id="四-组件通信方式"><a href="#四-组件通信方式" class="headerlink" title="四. 组件通信方式"></a>四. 组件通信方式</h3>
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/2020/07/19/git%E5%A4%9A%E8%B4%A6%E6%88%B7%E9%85%8D%E7%BD%AE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1018,6 +923,114 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">A</span><br><span class="line">B</span><br><span class="line">C</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td></tr></table></figure>
 
 <p>subject2 的输出始终在subject1  的后面</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/23/%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Cowboy">
+      <meta itemprop="description" content="iOS 开发，会点OC，会点swift，会点前端，写过小程序">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cowboy 的博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2019/09/23/%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88/" class="post-title-link" itemprop="url">组件化方案</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2019-09-23 23:01:41" itemprop="dateCreated datePublished" datetime="2019-09-23T23:01:41+08:00">2019-09-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-24 17:15:02" itemprop="dateModified" datetime="2020-11-24T17:15:02+08:00">2020-11-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>参考: </p>
+<p><a href="">https://juejin.im/post/6844903829075574792</a></p>
+<p><a href="https://leavez.xyz/2018/05/04/intruduce_binary/" target="_blank" rel="noopener">Pod 预编译的傻瓜式解决方案</a></p>
+<p><a href="https://dmanager.github.io/ios/2019/01/21/%E5%9F%BA%E4%BA%8ECocoaPods%E7%9A%84%E7%BB%84%E4%BB%B6%E4%BA%8C%E8%BF%9B%E5%88%B6%E5%8C%96%E5%AE%9E%E8%B7%B5/" target="_blank" rel="noopener">基于 CocoaPods 的组件二进制化实践</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/44280283" target="_blank" rel="noopener">知乎 iOS 基于 CocoaPods 实现的二进制化方案</a></p>
+<p><a href="">https://zhuanlan.zhihu.com/p/101333967</a></p>
+<p><a href="">美团 iOS 工程 zsource 命令背后的那些事儿</a></p>
+<h3 id="一-组件划分"><a href="#一-组件划分" class="headerlink" title="一. 组件划分"></a>一. 组件划分</h3><p><img src="images/zhihanyun_zujian.jpg" alt=""></p>
+<p>目前项目中组件划分，基本上以下3类</p>
+<ol>
+<li>基础组件：网络组件( AFNetworking 的封装 )，数据库组件 ( FMDB 封装 )，图片缓存 (SDWebImage)，json解析( YYModel) ，缓存组件。</li>
+<li>功能组件：视频播放组件，音频录制和播放组件, 相册组件, 路由组件，Debug 组件，图片预览组件，定位组件，富文本组件( YYText )，扫描组件。</li>
+<li>UI组件： 空视图集组件，弹框组件，多页面嵌套滚动组件。</li>
+</ol>
+<p>两个比较重要的基础组件像 BCFoundation 组件和 BCUIKit 组件，需要特别说下。因为这两个组件的定位，就相当于系统的 UIKit 和 Foundtion 库。</p>
+<ol>
+<li><p>BCFoundation 是常用的 NS 开头的系统类的分类</p>
+</li>
+<li><p>BCUIKit 是常用的 UI 开头的系统类的分类</p>
+</li>
+</ol>
+<p><img src="images/bcuikit.jpg" alt=""></p>
+<h3 id="二-业务模块"><a href="#二-业务模块" class="headerlink" title="二. 业务模块"></a>二. 业务模块</h3><p>业务模块的划分其实都比较简单，主要按照单个业务来划分，首页模块单独划分成 HomeModule 或者 HomeKit，个人中心单独划分成 MeModule 或者 MeKit ,这些都不是太复杂的，复杂的是模块之间有耦合怎么办。例如 A 模块和 B 模块都要用到, AViewController.h, AViewController.m , Amodel.h ， Amodel.m 。 我们的做法是将  AViewController 和 Amodel 单独提出来做成一个公共组件 ABCommonKit，然后让 A 模块和 B 模块都依赖这个  ABCommonKit。这样代码的复用率就高了，不用在 A 模块和 B 模块都写一遍相同的代码。</p>
+<p><img src="images/abcommon.jpg" alt=""></p>
+<h3 id="三-集成方式"><a href="#三-集成方式" class="headerlink" title="三. 集成方式"></a>三. 集成方式</h3><p>组件化通用的集成方式，都是将组件做成 cocoapods 的私有组件，然后维护一个私有 podspec 源。这种方式保证了组件不像公开库那样，不被外界访问，也能用 cocoapods 导入。但是在实际开发的过程中，将每个组件做成私有组件，然后迭代升级，发布，过程太繁琐和复杂了。我们就没有采用私有库的方式，而是采用的是本地库 + tag 的方式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod &#39;YYText&#39;, &#39;1.0.7&#39;,  :inhibit_warnings &#x3D;&gt; true</span><br></pre></td></tr></table></figure>
+
+<p>上面的代码是用 cocoapods 导入 YYText，首先 cocoapods 本质也是拉取 github 上的公开库的tag，稳定的组件就通过tag 方式导入，正在开发的业务组件，就用本地库的方式，但是本地组件，没法和其他人同步代码。我们采用脚本来解决这个问题。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bc_pod &quot;BCFoundation&quot;, :tag &#x3D;&gt; &quot;v1.3.6.3&quot;, :bc_subSpecs &#x3D;&gt; [&quot;Core&quot;], :git &#x3D;&gt; &quot;git@git.xxx.com:ios-component&#x2F;BCFoundation.git&quot;, :inhibit_warnings &#x3D;&gt; false , :bc_useBranch &#x3D;&gt; 0, :bc_branch &#x3D;&gt; &quot;develop&quot;, :bc_useRemote &#x3D;&gt; 1,  :bc_useLib &#x3D;&gt; 0</span><br></pre></td></tr></table></figure>
+<p>上面就是我们导入组件的方式，</p>
+<blockquote>
+<p>bc_useRemote ：1 表示是否使用 git 上的库，0 表示使用本地代码。选择的是 1 的话，我们会去 git 上拉取相应tag 的源码。<br>选择 0 的话，我们先去本地判断有没有有没有 BCFoundation 这个库，有的话，直接用git pull 拉取最新代码，没有的话，利用 git  去 git 地址去 git clone ，</p>
+</blockquote>
+<blockquote>
+<p>bc_branch： git clone 是可以clone 不同 分支的，如果本地有这个库，那就先删掉本地的，然后再 clone 相应分支的代码。</p>
+</blockquote>
+<blockquote>
+<p>bc_useLib：如果组件比较稳定了，而且代码比较私密，可以打包成 framework ,然后导入，必须创建对应的 podSpec 文件。</p>
+</blockquote>
+<p>像 cocoapods 的二进制化，可以参考下最上面的一些文章。 </p>
+<h3 id="四-组件通信方式"><a href="#四-组件通信方式" class="headerlink" title="四. 组件通信方式"></a>四. 组件通信方式</h3><ol>
+<li>路由</li>
+<li></li>
+</ol>
 
       
     </div>
