@@ -27,15 +27,15 @@
 <meta property="og:site_name" content="Cowboy 的博客">
 <meta property="og:description" content="一. 组件划分 目前项目中组件划分，基本上以下3类  基础组件：网络组件( AFNetworking 的封装 )，数据库组件 ( FMDB 封装 )，图片缓存 (SDWebImage)，json解析( YYModel) ，缓存组件。 功能组件：视频播放组件，音频录制和播放组件, 相册组件, 路由组件，Debug 组件，图片预览组件，定位组件，富文本组件( YYText )，扫描组件。 UI组件：">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://yoursite.com/2019/09/23/%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88/images/zhihanyun_zujian.jpg">
-<meta property="og:image" content="http://yoursite.com/2019/09/23/%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88/images/bcuikit.jpg">
-<meta property="og:image" content="http://yoursite.com/2019/09/23/%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88/images/abcommon.jpg">
+<meta property="og:image" content="http://yoursite.com/images/zhihanyun_zujian.jpg">
+<meta property="og:image" content="http://yoursite.com/images/bcuikit.jpg">
+<meta property="og:image" content="http://yoursite.com/images/abcommon.jpg">
 <meta property="article:published_time" content="2019-09-23T15:01:41.000Z">
-<meta property="article:modified_time" content="2020-11-24T09:17:21.065Z">
+<meta property="article:modified_time" content="2020-11-24T09:20:25.937Z">
 <meta property="article:author" content="Cowboy">
 <meta property="article:tag" content="组件化">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://yoursite.com/2019/09/23/%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88/images/zhihanyun_zujian.jpg">
+<meta name="twitter:image" content="http://yoursite.com/images/zhihanyun_zujian.jpg">
 
 <link rel="canonical" href="http://yoursite.com/2019/09/23/%E7%BB%84%E4%BB%B6%E5%8C%96%E6%96%B9%E6%A1%88/">
 
@@ -190,7 +190,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-24 17:17:21" itemprop="dateModified" datetime="2020-11-24T17:17:21+08:00">2020-11-24</time>
+                <time title="修改时间：2020-11-24 17:20:25" itemprop="dateModified" datetime="2020-11-24T17:20:25+08:00">2020-11-24</time>
               </span>
 
           
@@ -204,7 +204,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="一-组件划分"><a href="#一-组件划分" class="headerlink" title="一. 组件划分"></a>一. 组件划分</h3><p><img src="images/zhihanyun_zujian.jpg" alt=""></p>
+        <h3 id="一-组件划分"><a href="#一-组件划分" class="headerlink" title="一. 组件划分"></a>一. 组件划分</h3><p><img src="/images/zhihanyun_zujian.jpg" alt=""></p>
 <p>目前项目中组件划分，基本上以下3类</p>
 <ol>
 <li>基础组件：网络组件( AFNetworking 的封装 )，数据库组件 ( FMDB 封装 )，图片缓存 (SDWebImage)，json解析( YYModel) ，缓存组件。</li>
@@ -218,9 +218,9 @@
 <li><p>BCUIKit 是常用的 UI 开头的系统类的分类</p>
 </li>
 </ol>
-<p><img src="images/bcuikit.jpg" alt=""></p>
+<p><img src="/images/bcuikit.jpg" alt=""></p>
 <h3 id="二-业务模块"><a href="#二-业务模块" class="headerlink" title="二. 业务模块"></a>二. 业务模块</h3><p>业务模块的划分其实都比较简单，主要按照单个业务来划分，首页模块单独划分成 HomeModule 或者 HomeKit，个人中心单独划分成 MeModule 或者 MeKit ,这些都不是太复杂的，复杂的是模块之间有耦合怎么办。例如 A 模块和 B 模块都要用到, AViewController.h, AViewController.m , Amodel.h ， Amodel.m 。 我们的做法是将  AViewController 和 Amodel 单独提出来做成一个公共组件 ABCommonKit，然后让 A 模块和 B 模块都依赖这个  ABCommonKit。这样代码的复用率就高了，不用在 A 模块和 B 模块都写一遍相同的代码。</p>
-<p><img src="images/abcommon.jpg" alt=""></p>
+<p><img src="/images/abcommon.jpg" alt=""></p>
 <h3 id="三-集成方式"><a href="#三-集成方式" class="headerlink" title="三. 集成方式"></a>三. 集成方式</h3><p>组件化通用的集成方式，都是将组件做成 cocoapods 的私有组件，然后维护一个私有 podspec 源。这种方式保证了组件不像公开库那样，不被外界访问，也能用 cocoapods 导入。但是在实际开发的过程中，将每个组件做成私有组件，然后迭代升级，发布，过程太繁琐和复杂了。我们就没有采用私有库的方式，而是采用的是本地库 + tag 的方式。</p>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pod &#39;YYText&#39;, &#39;1.0.7&#39;,  :inhibit_warnings &#x3D;&gt; true</span><br></pre></td></tr></table></figure>
 
