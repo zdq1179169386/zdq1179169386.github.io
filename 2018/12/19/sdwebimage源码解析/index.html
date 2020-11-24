@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="SDWebimage 是iOS 开发的图片加载库，最主要的类的就是 SDWebImageManager ,它拥有 SDImageCache 类型的 imageCache （图片缓存） 和 SDWebImageDownloader 类型的 imageDownloader (图片下载器)。  SDWebImageManager当根据 URL 去加载图片时，会先去判断是否有内存缓存，有： 直接去显示图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SDWebimage 源码解析">
+<meta property="og:url" content="http://yoursite.com/2018/12/19/sdwebimage%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:site_name" content="Cowboy 的博客">
+<meta property="og:description" content="SDWebimage 是iOS 开发的图片加载库，最主要的类的就是 SDWebImageManager ,它拥有 SDImageCache 类型的 imageCache （图片缓存） 和 SDWebImageDownloader 类型的 imageDownloader (图片下载器)。  SDWebImageManager当根据 URL 去加载图片时，会先去判断是否有内存缓存，有： 直接去显示图">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://yoursite.com/images/sdwebimage.jpg">
+<meta property="article:published_time" content="2018-12-19T01:55:19.000Z">
+<meta property="article:modified_time" content="2020-09-24T07:58:41.241Z">
+<meta property="article:author" content="Cowboy">
+<meta property="article:tag" content="SDWebimage 源码">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://yoursite.com/images/sdwebimage.jpg">
+
+<link rel="canonical" href="http://yoursite.com/2018/12/19/sdwebimage%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>SDWebimage 源码解析 | Cowboy 的博客</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Cowboy 的博客</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/19/sdwebimage%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Cowboy">
+      <meta itemprop="description" content="iOS 开发，会点OC，会点swift，会点前端，写过小程序">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Cowboy 的博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SDWebimage 源码解析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-12-19 09:55:19" itemprop="dateCreated datePublished" datetime="2018-12-19T09:55:19+08:00">2018-12-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-24 15:58:41" itemprop="dateModified" datetime="2020-09-24T15:58:41+08:00">2020-09-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p><img src="/images/sdwebimage.jpg" alt=""></p>
+<p>SDWebimage 是iOS 开发的图片加载库，最主要的类的就是 <code>SDWebImageManager</code> ,它拥有 <code>SDImageCache</code> 类型的 <code>imageCache</code> （图片缓存） 和 <code>SDWebImageDownloader</code> 类型的 <code>imageDownloader</code> (图片下载器)。 </p>
+<h3 id="SDWebImageManager"><a href="#SDWebImageManager" class="headerlink" title="SDWebImageManager"></a>SDWebImageManager</h3><p>当根据 URL 去加载图片时，会先去判断是否有内存缓存，有： 直接去显示图片，没有：再去判断是否有磁盘缓存，有：将磁盘缓存加载到内存缓存中，然后再去显示图片，没有：执行下载操作。</p>
+<h3 id="SDWebImageDownloader"><a href="#SDWebImageDownloader" class="headerlink" title="SDWebImageDownloader"></a>SDWebImageDownloader</h3><p><code>SDWebImageDownloader</code> 是负责管理下载操作的，会将每个下载请求封装成operation ，然后加入到 <code>downloadQueue</code>  并发队列中（最大并发数是6），然后会记录这次下载请求，就是加这次operation 添加到 <code>URLOperations</code> 中， <code>URLOperations</code> 是个字典，每次下载前会根据URL 判断是否有对应的operation，如果有就不重复添加。成功之后，会从 <code>URLOperations</code> 删除对应的 operation。</p>
+<p>下载成功之后，会先将图片数据存到磁盘中，然后加载一份到内存缓存中，然后再去显示图片。</p>
+<h3 id="SDImageCache"><a href="#SDImageCache" class="headerlink" title="SDImageCache"></a>SDImageCache</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">@interface SDImageCache ()</span><br><span class="line"></span><br><span class="line">#pragma mark - Properties</span><br><span class="line">@property (strong, nonatomic, nonnull) NSCache *memCache;</span><br><span class="line">@property (strong, nonatomic, nonnull) NSString *diskCachePath;</span><br><span class="line">@property (strong, nonatomic, nullable) NSMutableArray&lt;NSString *&gt; *customPaths;</span><br><span class="line">@property (SDDispatchQueueSetterSementics, nonatomic, nullable) dispatch_queue_t ioQueue;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+
+<p>SDImageCache 是负责管理图片缓存的。</p>
+<p>4.0 版本的内存缓存是拥有一个 <code>NSCache</code> 类型的memCache 对象，<code>NSCache</code> 的好处是当收到内存警告时，它会自动移除对象来释放内存。磁盘缓存的部分 ，是使用 <code>NSFileManager</code>  进行文件存储的。还有一个串行的 ioQueue ，将图片数据写入到磁盘中，或者从磁盘中取图片数据，都是在这个串行队列中进行。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@interface SDImageCache ()</span><br><span class="line"></span><br><span class="line">#pragma mark - Properties</span><br><span class="line">@property (nonatomic, strong, readwrite, nonnull) id&lt;SDMemoryCache&gt; memoryCache;</span><br><span class="line">@property (nonatomic, strong, readwrite, nonnull) id&lt;SDDiskCache&gt; diskCache;</span><br><span class="line">@property (nonatomic, copy, readwrite, nonnull) SDImageCacheConfig *config;</span><br><span class="line">@property (nonatomic, copy, readwrite, nonnull) NSString *diskCachePath;</span><br><span class="line">@property (nonatomic, strong, nullable) dispatch_queue_t ioQueue;</span><br><span class="line"></span><br><span class="line">@end</span><br></pre></td></tr></table></figure>
+
+<p>5.0之后，它包含一个<code>SDMemoryCache</code>类型的内存缓存对象<code>memoryCache</code>，和<code>SDDiskCache</code>类型的磁盘缓存对象<code>diskCache</code>。IO 读写队列还是没变</p>
+<h3 id="SDMemoryCache"><a href="#SDMemoryCache" class="headerlink" title="SDMemoryCache"></a>SDMemoryCache</h3><p>首先 <code>SDMemoryCache</code> 继承了<code>NSCache</code>，它拥有个<code>NSMapTable</code> 类型的weakCache属性。</p>
+<p>NSMapTable 的特点如下：</p>
+<blockquote>
+<p>NSMapTable和NSDictionary相对应，相对于NSDictionary/NSMutableDictionary，NSMapTable有如下的特征：<br>NSDictionary/NSMutableDictionary会copy对应的key，强引用相应的value。<br>NSMapTable是可变的，没有一个不变的类与其对应。<br>NSMapTable可以对其key和value弱引用，在这种情况下当key或者value被释放的时候，此entry会自动从NSMapTable中移除。<br>NSMapTable在加入一个（key，value）的时候，可以对其value设置为copy。<br>NSMapTable可以包含任意指针，使用指针去做相等或者hashing检查。</p>
+</blockquote>
+<p><a href="https://juejin.im/post/5a321cba6fb9a0450671a42c" target="_blank" rel="noopener">参考</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">self.weakCache &#x3D; [[NSMapTable alloc] initWithKeyOptions:NSPointerFunctionsStrongMemory valueOptions:NSPointerFunctionsWeakMemory capacity:0];</span><br></pre></td></tr></table></figure>
+<p><code>NSPointerFunctionsWeakMemory</code> 使用 weak 储存 value 值</p>
+<p>另外它还拥有一个 <code>weakCacheLock</code> 锁对象，在读写的时候加锁，防止多线程出错</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">@property (nonatomic, strong, nonnull) dispatch_semaphore_t weakCacheLock</span><br></pre></td></tr></table></figure>
+
+<p>另外，它还自己监听了 <code>UIApplicationDidReceiveMemoryWarningNotification</code> 通知，收到内存警告的时候，会释放内存。(不太清楚这里为啥还要监听内存警告通知，不是说nscache 会自动移除对象来释放内存吗)</p>
+<p>疑问？</p>
+<blockquote>
+<p>SDMemoryCache 本身是继承 NSCache 的，为啥还要用 weakCache 来存储数据呢？况且之前的版本，SDImageCache 就有一个 NSCache 类型的属性 memoryCache，后续版本为啥要这么修改呢？</p>
+</blockquote>
+<p>原因：</p>
+<blockquote>
+<p>NSCache 本身是会在收到内存警告的时候，会自动释放一部分内存的，假如 imageview 需要一张图，这时候会先去内存找这张图，没有再去磁盘中读取，加载一份到内存中，同时设置到 imageView 上，如果这时，收到内存警告了，memoryCache 会自动释放掉一部分内存，刚好就是刚刚读取到内存中的这张图片，如果是列表反复滑动的时候，就会出现频繁去磁盘中读取图片的情况，我们都知道去磁盘中读取数据是非常耗时的，所以 Sd 使用了  NSMapTable类型的 weakCache 。自己实现了收到内存警告的方法，修改删除逻辑，优先删除老的数据，而不是最近使用的数据。</p>
+</blockquote>
+<h3 id="SDDiskCache"><a href="#SDDiskCache" class="headerlink" title="SDDiskCache"></a>SDDiskCache</h3><p>它拥有一个 <code>fileManager</code> 对象，负责图片存储和删除。</p>
+<p>1， <code>SDImageCache</code>初始化的时候，会调用<code>migrateDiskCacheDirectory</code> 方法，做一次数据迁移</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">- (void)migrateDiskCacheDirectory &#123;</span><br><span class="line">    if ([self.diskCache isKindOfClass:[SDDiskCache class]]) &#123;</span><br><span class="line">        static dispatch_once_t onceToken;</span><br><span class="line">        dispatch_once(&amp;onceToken, ^&#123;</span><br><span class="line">            &#x2F;&#x2F; ~&#x2F;Library&#x2F;Caches&#x2F;com.hackemist.SDImageCache&#x2F;default&#x2F;</span><br><span class="line">            NSString *newDefaultPath &#x3D; [[[self userCacheDirectory] stringByAppendingPathComponent:@&quot;com.hackemist.SDImageCache&quot;] stringByAppendingPathComponent:@&quot;default&quot;];</span><br><span class="line">            &#x2F;&#x2F; ~&#x2F;Library&#x2F;Caches&#x2F;default&#x2F;com.hackemist.SDWebImageCache.default&#x2F;</span><br><span class="line">            NSString *oldDefaultPath &#x3D; [[[self userCacheDirectory] stringByAppendingPathComponent:@&quot;default&quot;] stringByAppendingPathComponent:@&quot;com.hackemist.SDWebImageCache.default&quot;];</span><br><span class="line">            dispatch_async(self.ioQueue, ^&#123;</span><br><span class="line">                [((SDDiskCache *)self.diskCache) moveCacheDirectoryFromPath:oldDefaultPath toPath:newDefaultPath];</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2, <code>SDImageCache</code> 会监听APP 进入后台通知，当APP 进入后台的时候，会调用<code>diskCache</code> 去删除过期数据</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">- (void)deleteOldFilesWithCompletionBlock:(nullable SDWebImageNoParamsBlock)completionBlock &#123;</span><br><span class="line">    dispatch_async(self.ioQueue, ^&#123;</span><br><span class="line">        [self.diskCache removeExpiredData];</span><br><span class="line">        if (completionBlock) &#123;</span><br><span class="line">            dispatch_async(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">                completionBlock();</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>过期时间是一周，删除的话，会先降到存储size 最大值的一半。</p>
+<h3 id="缓存查找"><a href="#缓存查找" class="headerlink" title="缓存查找"></a>缓存查找</h3><p>会先从内存缓存中查找 <code>imageFromMemoryCacheForKey</code>, 内存中不存在，才会从磁盘缓存查找<code>diskImageDataBySearchingAllPathsForKey</code> </p>
+<p>从缓存中查找图片数据，被封装成每次返回一个operation  的方法了, 每次开始前会先判断 这次 operation 是否被取消了，然后会将这次磁盘缓存查找，提交串行队列 <code>ioQueue</code> 中去执行</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">- (nullable NSOperation *)queryCacheOperationForKey:(nullable NSString *)key done:(nullable SDCacheQueryCompletedBlock)doneBlock &#123;</span><br><span class="line">    if (!key) &#123;</span><br><span class="line">        if (doneBlock) &#123;</span><br><span class="line">            doneBlock(nil, nil, SDImageCacheTypeNone);</span><br><span class="line">        &#125;</span><br><span class="line">        return nil;</span><br><span class="line">    &#125;</span><br><span class="line">    &#x2F;&#x2F; First check the in-memory cache...</span><br><span class="line">    UIImage *image &#x3D; [self imageFromMemoryCacheForKey:key];</span><br><span class="line">    if (image) &#123;</span><br><span class="line">        NSData *diskData &#x3D; nil;</span><br><span class="line">        if ([image isGIF]) &#123;</span><br><span class="line">            diskData &#x3D; [self diskImageDataBySearchingAllPathsForKey:key];</span><br><span class="line">        &#125;</span><br><span class="line">        if (doneBlock) &#123;</span><br><span class="line">            doneBlock(image, diskData, SDImageCacheTypeMemory);</span><br><span class="line">        &#125;</span><br><span class="line">        return nil;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    NSOperation *operation &#x3D; [NSOperation new];</span><br><span class="line">    dispatch_async(self.ioQueue, ^&#123;</span><br><span class="line">        if (operation.isCancelled) &#123;</span><br><span class="line">            &#x2F;&#x2F; do not call the completion if cancelled</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @autoreleasepool &#123;</span><br><span class="line">            NSData *diskData &#x3D; [self diskImageDataBySearchingAllPathsForKey:key];</span><br><span class="line">            UIImage *diskImage &#x3D; [self diskImageForKey:key];</span><br><span class="line">            if (diskImage &amp;&amp; self.config.shouldCacheImagesInMemory) &#123;</span><br><span class="line">                NSUInteger cost &#x3D; SDCacheCostForImage(diskImage);</span><br><span class="line">                [self.memCache setObject:diskImage forKey:key cost:cost];</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            if (doneBlock) &#123;</span><br><span class="line">                dispatch_async(dispatch_get_main_queue(), ^&#123;</span><br><span class="line">                    doneBlock(diskImage, diskData, SDImageCacheTypeDisk);</span><br><span class="line">                &#125;);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    return operation;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="解码"><a href="#解码" class="headerlink" title="解码"></a>解码</h3><p>为什么要解码 ?</p>
+<blockquote>
+<p>事实上，不管是 JPEG 还是 PNG 图片，都是一种压缩的位图图形格式。只不过 PNG 图片是无损压缩，并且支持 alpha 通道，而 JPEG 图片则是有损压缩，可以指定 0-100% 的压缩比,因此，在将磁盘中的图片渲染到屏幕之前，必须先要得到图片的原始像素数据，才能执行后续的绘制操作，这就是为什么需要对图片解压缩的原因。</p>
+</blockquote>
+<p><code>SDWebImage</code> 的流程： 当根据 URL 下载一张图片时，成功了之后，这时在在下载成功的回调中我们得到的是 imageData 对象， 然后我们会转成 image ,这时的image 可能是 jpg 或者 png 格式的，然后我们会将图片渲染出来，也就是设置到 imageView 的 image 属性上，这时系统会先将图片解压得到原始数据，也就是位图数据，然后再进行绘制。将压缩的图片数据解码成未压缩的位图数据，是一个非常长耗时的CPU操作，而且是发生在主线程。所以这对我们的APP性能是很严重的影响。<code>SDWebImage</code> 将 image 的缓存查找提交到了 <code>ioQueue</code> 串行队列，异步执行，会创建一个分线程按顺序执行， 所以图片的解码也会在这条线程上执行，从而不会阻塞主线程，</p>
+<p>经过前面的分析，我们知道 <code>SDImageCache</code> 拥有一个 <code>ioQueue</code> 队列，会将图片的写入磁盘操作和从磁盘中读取数据操作（包括图片解码），提交到这个队列上，异步执行会创建一条新的线程按顺序执行任务。</p>
+<p>同时从磁盘中读取到图片数据之后，会加载一份到内存缓存中，所以内存缓存中持有的也是解码之后的图片数据。</p>
+<p>解码方式:</p>
+<p>1、 使用UIGraphic创建Context，并调用UIImage的drawInRect函数。这个方法虽然是UI开头的，但是确实线程安全的</p>
+<p>2、 创建带Alpha的CGContext，然后把CGImage绘制上去</p>
+<p>3、 创建不带Alpha的CGContext，然后把CGImage绘制上去</p>
+<p>4、 ImageIO创建UIImage有个选项shouldCacheImmediately，设为true之后创建UIImage同时就会进行解码，kCGImageSourceShouldCache : 指定是否应以解码形式缓存图像，64 位，默认是开启的</p>
+<p>SDWebImage 用的就是 <code>Core Graphics</code>,  4.0版本的解码部分代码，主要在 <code>SDWebImageDecoder</code> 这个类里</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">+ (nullable UIImage *)decodedImageWithImage:(nullable UIImage *)image &#123;</span><br><span class="line">if (![UIImage shouldDecodeImage:image]) &#123;</span><br><span class="line">    return image;</span><br><span class="line">&#125;</span><br><span class="line">    </span><br><span class="line">&#x2F;&#x2F; autorelease the bitmap context and all vars to help system to free memory when there are memory warning.</span><br><span class="line">&#x2F;&#x2F; on iOS7, do not forget to call [[SDImageCache sharedImageCache] clearMemory];</span><br><span class="line">@autoreleasepool&#123;</span><br><span class="line">    </span><br><span class="line">    CGImageRef imageRef &#x3D; image.CGImage;</span><br><span class="line">    CGColorSpaceRef colorspaceRef &#x3D; [UIImage colorSpaceForImageRef:imageRef];</span><br><span class="line">    </span><br><span class="line">    size_t width &#x3D; CGImageGetWidth(imageRef);</span><br><span class="line">    size_t height &#x3D; CGImageGetHeight(imageRef);</span><br><span class="line">    size_t bytesPerRow &#x3D; kBytesPerPixel * width;</span><br><span class="line"></span><br><span class="line">    &#x2F;&#x2F; kCGImageAlphaNone is not supported in CGBitmapContextCreate.</span><br><span class="line">    &#x2F;&#x2F; Since the original image here has no alpha info, use kCGImageAlphaNoneSkipLast</span><br><span class="line">    &#x2F;&#x2F; to create bitmap graphics contexts without alpha info.</span><br><span class="line">    CGContextRef context &#x3D; CGBitmapContextCreate(NULL,</span><br><span class="line">                                                 width,</span><br><span class="line">                                                 height,</span><br><span class="line">                                                 kBitsPerComponent,</span><br><span class="line">                                                 bytesPerRow,</span><br><span class="line">                                                 colorspaceRef,</span><br><span class="line">                                                 kCGBitmapByteOrderDefault|kCGImageAlphaNoneSkipLast);</span><br><span class="line">    if (context &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">        return image;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    &#x2F;&#x2F; Draw the image into the context and retrieve the new bitmap image without alpha</span><br><span class="line">    CGContextDrawImage(context, CGRectMake(0, 0, width, height), imageRef);</span><br><span class="line">    CGImageRef imageRefWithoutAlpha &#x3D; CGBitmapContextCreateImage(context);</span><br><span class="line">    UIImage *imageWithoutAlpha &#x3D; [UIImage imageWithCGImage:imageRefWithoutAlpha</span><br><span class="line">                                                     scale:image.scale</span><br><span class="line">                                               orientation:image.imageOrientation];</span><br><span class="line">    </span><br><span class="line">    CGContextRelease(context);</span><br><span class="line">    CGImageRelease(imageRefWithoutAlpha);</span><br><span class="line">    </span><br><span class="line">    return imageWithoutAlpha;</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>5.8 版本的解码部分在<code>SDImageCoderHelper</code> 这个类里面，代码大致相同。</p>
+<p>Image IO 的解码方式</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&#x2F;&#x2F;ImageIO</span><br><span class="line">- (UIImage *)resizedImage:(NSURL *)url size:(CGSize)size&#123;</span><br><span class="line">    CFURLRef urlRef &#x3D; CFBridgingRetain(url);</span><br><span class="line">    CFDictionaryRef imageOptions;</span><br><span class="line">    CFStringRef imageKeys[2];</span><br><span class="line">    CFTypeRef imageValues[2];</span><br><span class="line">    </span><br><span class="line">    imageKeys[0] &#x3D; kCGImageSourceShouldCache;</span><br><span class="line">    imageValues[0] &#x3D; (CFTypeRef)kCFBooleanTrue;</span><br><span class="line">    imageKeys[1] &#x3D; kCGImageSourceShouldAllowFloat;</span><br><span class="line">    imageValues[1] &#x3D; (CFTypeRef)kCFBooleanTrue;</span><br><span class="line">    </span><br><span class="line">    imageOptions &#x3D; CFDictionaryCreate(NULL, (const void **)imageKeys, (const void**)imageValues, 2, &amp;kCFTypeDictionaryKeyCallBacks, &amp;kCFTypeDictionaryValueCallBacks);</span><br><span class="line">    </span><br><span class="line">    CGImageSourceRef  imageSource &#x3D; CGImageSourceCreateWithURL(urlRef, imageOptions);</span><br><span class="line">    CFRelease(imageOptions);</span><br><span class="line">    if (imageSource &#x3D;&#x3D; NULL) &#123;</span><br><span class="line">        return NULL;</span><br><span class="line">    &#125;</span><br><span class="line">    CGImageRef  imageRef &#x3D; CGImageSourceCreateImageAtIndex(imageSource, 0, NULL);</span><br><span class="line">    UIImage * image &#x3D; [[UIImage alloc] initWithCGImage:imageRef];</span><br><span class="line">    return image;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="高清图处理"><a href="#高清图处理" class="headerlink" title="高清图处理"></a>高清图处理</h3><p>在解码大图的时候，用到了 <code>CGBitmapContextCreate</code> 函数，它会生成一块大小 width * height * 4 的内存。所以大图加载的时候，出现内存陡增的情况。</p>
+<p>解决办法：</p>
+<p>1，<a href="https://juejin.im/post/5d70c3616fb9a06afe12b762" target="_blank" rel="noopener">一个是创建缩略图</a></p>
+<p>2，<a href="https://juejin.im/post/5adde71c6fb9a07aa63163eb" target="_blank" rel="noopener">一个是分块绘制</a></p>
+<h3 id="如何优化-SDWebImage"><a href="#如何优化-SDWebImage" class="headerlink" title="如何优化 SDWebImage"></a>如何优化 <code>SDWebImage</code></h3><p>1， 缓存命中<br>可以采用 LRU 算法，最近最少算法，如果数据最近被访问过，那么将来被访问的几率也更高，如果一个图片被访问了，同时将它挪到数组的前端，那下次查找速度也会快很多，当缓存超过限制了，将优先数组尾部的数据，因为那些是比较少被访问到的。</p>
+<p>2，图片解码</p>
+<p><code>Core Graphics</code> 和 <code>Image I/O</code> 都可以进行解码操作，但是 sd 为啥要选用  <code>Core Graphics</code> ，不是很清楚，因为从网上资料看， Image IO 的性能优于 Core Graphics。<br>源码上，我好像只看到解码动图部分用了，Image IO 解码的 那些参数。 </p>
+<p>参考:</p>
+<p><a href="https://dreampiggy.com/2017/10/30/iOS%E5%B9%B3%E5%8F%B0%E5%9B%BE%E7%89%87%E7%BC%96%E8%A7%A3%E7%A0%81%E5%85%A5%E9%97%A8%E6%95%99%E7%A8%8B%EF%BC%88Image:IO%E7%AF%87%EF%BC%89/" target="_blank" rel="noopener">iOS平台图片编解码入门教程（Image/IO篇）</a></p>
+<p><a href="https://zhuanlan.zhihu.com/p/26955368" target="_blank" rel="noopener">如何打造易扩展的高性能图片组件</a></p>
+<p><a href="https://longtimenoc.com/archives/ios%E5%A6%82%E4%BD%95%E9%81%BF%E5%85%8D%E5%9B%BE%E5%83%8F%E8%A7%A3%E5%8E%8B%E7%BC%A9%E7%9A%84%E6%97%B6%E9%97%B4%E5%BC%80%E9%94%80" target="_blank" rel="noopener">如何避免图像解压缩的时间开销</a></p>
+<p><a href="https://nshipster.com/image-resizing/" target="_blank" rel="noopener">图像调整大小技术</a></p>
+<p><a href="https://juejin.im/post/5ec35cc55188256d92438174#heading-8" target="_blank" rel="noopener">iOS Rendering 渲染全解析</a></p>
+<p><a href="https://my.oschina.net/u/2340880/blog/406437" target="_blank" rel="noopener">CGImageRef</a></p>
+<p><a href="https://my.oschina.net/u/2340880/blog/838680" target="_blank" rel="noopener">ImageIO</a></p>
+<p><a href="https://www.jianshu.com/p/4dcd6e4bdbf0" target="_blank" rel="noopener">Image IO 学习笔记</a></p>
+<p>源码：</p>
+<p><a href="https://github.com/zdq1179169386/ReadSourceCode" target="_blank" rel="noopener">ReadSourceCode</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SDWebimage-%E6%BA%90%E7%A0%81/" rel="tag"># SDWebimage 源码</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2019/06/10/swift%E6%A8%A1%E5%BC%8F/" rel="next" title="swift 模式和模式匹配">
+      swift 模式和模式匹配 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#SDWebImageManager"><span class="nav-number">1.</span> <span class="nav-text">SDWebImageManager</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SDWebImageDownloader"><span class="nav-number">2.</span> <span class="nav-text">SDWebImageDownloader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SDImageCache"><span class="nav-number">3.</span> <span class="nav-text">SDImageCache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SDMemoryCache"><span class="nav-number">4.</span> <span class="nav-text">SDMemoryCache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SDDiskCache"><span class="nav-number">5.</span> <span class="nav-text">SDDiskCache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存查找"><span class="nav-number">6.</span> <span class="nav-text">缓存查找</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解码"><span class="nav-number">7.</span> <span class="nav-text">解码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#高清图处理"><span class="nav-number">8.</span> <span class="nav-text">高清图处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何优化-SDWebImage"><span class="nav-number">9.</span> <span class="nav-text">如何优化 SDWebImage</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Cowboy</p>
+  <div class="site-description" itemprop="description">iOS 开发，会点OC，会点swift，会点前端，写过小程序</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Cowboy</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
