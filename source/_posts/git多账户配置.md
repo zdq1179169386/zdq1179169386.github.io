@@ -9,6 +9,8 @@ tags: [git]
 [https://www.cnblogs.com/hanguozhi/p/10878043.html]()
 [https://juejin.im/post/5d1ebab8f265da1bd2610b6b]()
 
+<!--more-->
+
 - 1，之前配置过全局的用户名的先删掉，
 查看全局用户名和邮箱的命令：
 
