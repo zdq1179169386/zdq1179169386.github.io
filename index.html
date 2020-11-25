@@ -183,7 +183,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-25 16:38:27" itemprop="dateModified" datetime="2020-11-25T16:38:27+08:00">2020-11-25</time>
+                <time title="修改时间：2020-11-25 17:24:48" itemprop="dateModified" datetime="2020-11-25T17:24:48+08:00">2020-11-25</time>
               </span>
 
           
@@ -199,52 +199,14 @@
       
           <p>参考:</p>
 <p><a href="">https://www.cnblogs.com/hanguozhi/p/10878043.html</a><br><a href="">https://juejin.im/post/5d1ebab8f265da1bd2610b6b</a></p>
-<ul>
-<li>1，之前配置过全局的用户名的先删掉，<br>查看全局用户名和邮箱的命令：</li>
-</ul>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.name</span><br><span class="line">git config --global user.email</span><br></pre></td></tr></table></figure>
-
-<p>删除全局用户名和邮箱</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global --unset user.name </span><br><span class="line">git config --global --unset user.email</span><br></pre></td></tr></table></figure>
-
-<p>2，先生成码云的私钥和公钥<br>进入目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ~&#x2F;.ssh</span><br><span class="line">ssh-keygen -t rsa -C “2259434901@qq.com”</span><br></pre></td></tr></table></figure>
-
-<p>会提示你输入公钥和私钥的命名</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Generating public&#x2F;private rsa key pair. </span><br><span class="line">Enter file in which to save the key (&#x2F;Users&#x2F;liugui&#x2F;.ssh&#x2F;id_rsa):</span><br><span class="line">输入 gitee_rsa</span><br></pre></td></tr></table></figure>
-
-<p>3， 私钥添加到本地</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-add ~&#x2F;.ssh&#x2F;gitee_rsa</span><br></pre></td></tr></table></figure>
-
-<p>可以用 ssh-add -l 查看是否添加成功</p>
-<p>4，公钥上传到码云网址</p>
-<p>5， 验证</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@gitee.com</span><br></pre></td></tr></table></figure>
-
-<p>6， 再生成github 的私钥和公钥,步骤和之前差不多，要区别名字<br>进入目录</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cd ~&#x2F;.ssh</span><br><span class="line"></span><br><span class="line">ssh-keygen -t rsa -C “1179169386@qq.com”</span><br></pre></td></tr></table></figure>
-
-<p>会提示你输入公钥和私钥的命名</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Generating public&#x2F;private rsa key pair. </span><br><span class="line">Enter file in which to save the key (&#x2F;Users&#x2F;liugui&#x2F;.ssh&#x2F;id_rsa):</span><br><span class="line"></span><br><span class="line">输入 github_rsa</span><br></pre></td></tr></table></figure>
-
-<p>7,  私钥添加到本地</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-add ~&#x2F;.ssh&#x2F;github_rsa</span><br></pre></td></tr></table></figure>
-
-<p>可以用 <code>ssh-add -l</code> 查看是否添加成功</p>
-<p>8，公钥上传到码云网址</p>
-<p>9 ，验证</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
-
-<p>10，进入目录，新建配置文件</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ~&#x2F;.ssh</span><br><span class="line">touch config</span><br></pre></td></tr></table></figure>
-<p>config 文件里内容：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Host gitee</span><br><span class="line">HostName gitee.com</span><br><span class="line"> PreferredAuthentications publickey</span><br><span class="line"> User 2259434901@qq.com</span><br><span class="line"> IdentityFile ~&#x2F;.ssh&#x2F;gitee_rsa</span><br><span class="line"></span><br><span class="line">#ssh -T GitHub 会报错， ssh -T git@github.com 不报错</span><br><span class="line">Host github</span><br><span class="line"> HostName github.com</span><br><span class="line"> PreferredAuthentications publickey</span><br><span class="line"> User 1179169386@qq.com</span><br><span class="line"> IdentityFile ~&#x2F;.ssh&#x2F;github_rsa</span><br><span class="line"></span><br><span class="line"># ssh -T zhihan 会报错， ssh -T git@zhihanyun.com 不报错</span><br><span class="line">Host zhihan</span><br><span class="line"> HostName zhihanyun.com</span><br><span class="line"> PreferredAuthentications publickey</span><br><span class="line"> User 2259434901@qq.com</span><br><span class="line"> IdentityFile ~&#x2F;.ssh&#x2F;gitlab_rsa</span><br></pre></td></tr></table></figure>
-
-<p>11， 奇怪的是github 用别名验证会失败</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ssh -T gitee &#x2F;&#x2F;成功</span><br><span class="line">ssh -T git@gitee.com &#x2F;&#x2F;成功</span><br><span class="line"></span><br><span class="line">ssh -T github &#x2F;&#x2F;失败</span><br><span class="line">ssh -T git@github.com &#x2F;&#x2F;成功</span><br></pre></td></tr></table></figure>
-
-<p>12， 配置了config 文件，添加私钥到本地 <code>ssh-add xxx</code> 这步可以不用执行，也可以成功</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/07/19/git%E5%A4%9A%E8%B4%A6%E6%88%B7%E9%85%8D%E7%BD%AE/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
