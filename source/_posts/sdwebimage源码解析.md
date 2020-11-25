@@ -11,6 +11,8 @@ tags: [SDWebimage 源码]
 
 SDWebimage 是iOS 开发的图片加载库，最主要的类的就是 `SDWebImageManager` ,它拥有 `SDImageCache` 类型的 `imageCache` （图片缓存） 和 `SDWebImageDownloader` 类型的 `imageDownloader` (图片下载器)。 
 
+<!--more-->
+
 ### SDWebImageManager
 
 当根据 URL 去加载图片时，会先去判断是否有内存缓存，有： 直接去显示图片，没有：再去判断是否有磁盘缓存，有：将磁盘缓存加载到内存缓存中，然后再去显示图片，没有：执行下载操作。
